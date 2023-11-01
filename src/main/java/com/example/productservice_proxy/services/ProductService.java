@@ -4,11 +4,12 @@ import com.example.productservice_proxy.dtos.ProductDto;
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 
@@ -22,15 +23,49 @@ public class ProductService implements ProductServiceInterface {
 
 
     @Override
-    public String getAllProducts() {
-        return null;
+    //public String getAllProducts() {
+    public List<Product> getAllProducts() {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        //String products = restTemplate.getForEntity("https://fakestoreapi.com/products", String.class).getBody();
+        //ResponseEntity<List<ProductDto>> products = restTemplate.getForEntity("https://fakestoreapi.com/products", List<Product>.class); // instead of List , we are using array.
+        ResponseEntity<ProductDto[]> productDtos = restTemplate.getForEntity("https://fakestoreapi.com/products", ProductDto[].class);
+
+        //Now, converting the Array into List of Products. so, we need to loop through the array and convert each element into Product.
+
+        List<Product> answer = new ArrayList<>();
+
+        for(ProductDto productDto: productDtos.getBody()){
+            Product product = new Product();
+            product.setId(productDto.getId());
+            product.setTitle(productDto.getTitle());
+            product.setDescription(productDto.getDescription());
+            product.setPrice(productDto.getPrice());
+            Categories category = new Categories();
+            category.setName(productDto.getCategory());
+            product.setCategory(category);
+            product.setImageUrl(productDto.getImage());
+            product.setDescription(productDto.getDescription());
+            answer.add(product);
+            answer.add(getProduct(productDto));
+        }
+
+
+        return answer;
+
     }
 
     @Override
     //public String getSingleProduct(Long productId) {
     public Product getSingleProduct(Long productId) {
+
+
+
         RestTemplate restTemplate = restTemplateBuilder.build();
-        ProductDto productDto = restTemplate.getForEntity("https://fakestoreapi.com/products/{id}", ProductDto.class,productId).getBody();
+        //ProductDto productDto =
+            // restTemplate.getForEntity("https://fakestoreapi.com/products/{id}", ProductDto.class,productId).getBody();
+
+        ResponseEntity<ProductDto> productDto =
+                restTemplate.getForEntity("https://fakestoreapi.com/products/{id}", ProductDto.class,productId);
 
         //if we put Map.class instead of ProductDto.class, we will get a map of key value pairs.
         //Map productDto = restTemplate.getForEntity("https://fakestoreapi.com/products/{id}", Map.class,productId).getBody();
@@ -66,10 +101,11 @@ public class ProductService implements ProductServiceInterface {
 //        category.setName(productDto.getCategory());
 //        product.setCategory(category);
 //        product.setImageUrl(productDto.getImage());
-//        product.setDescription(productDto.getDescription());
+//        product.setDescription(productDto.getDescription()); //we can write this also or we can put in util class or like HELPER FUNCTION.
 
 
-        Product product = getProduct(productDto);
+        //Product product = getProduct(productDto);
+        Product product = getProduct(productDto.getBody());
         return product;
     }
 
@@ -83,8 +119,13 @@ public class ProductService implements ProductServiceInterface {
     }
 
     @Override
-    public String addNewProduct(ProductDto productDto) {
-        return null;
+    public Product addNewProduct(ProductDto productDto) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        restTemplate.postForEntity("https://fakestoreapi.com/products",productDto,ProductDto.class);
+        Product product = getProduct(productDto);
+        return product;
+
+
     }
 
     private Product getProduct(ProductDto productDto) {
