@@ -1,11 +1,12 @@
 package com.example.productservice_proxy.services;
 
 import com.example.productservice_proxy.dtos.ProductDto;
+import com.example.productservice_proxy.models.Product;
 
 public interface ProductServiceInterface {
     String getAllProducts();
 
-    String getSingleProduct(Long productId);
+    Product getSingleProduct(Long productId);
 
     String deleteProduct(Long productId);
 
