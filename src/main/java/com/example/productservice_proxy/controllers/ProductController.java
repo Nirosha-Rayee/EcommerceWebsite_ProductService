@@ -1,6 +1,8 @@
 package com.example.productservice_proxy.controllers;
 
+import com.example.productservice_proxy.clients.IClientProductDto;
 import com.example.productservice_proxy.dtos.ProductDto;
+import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
 import com.example.productservice_proxy.services.ProductServiceInterface;
 import org.springframework.http.HttpStatus;
@@ -71,13 +73,14 @@ public class ProductController {
             //return product;
             return responseEntity;
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            //return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 
     @PostMapping()
 //    public String addNewProduct(@RequestBody ProductDto productDto){
-   public ResponseEntity<Product> addNewProduct(@RequestBody ProductDto productDto){
+   public ResponseEntity<Product> addNewProduct(@RequestBody IClientProductDto productDto){
         Product product = this.productService.addNewProduct(productDto);
         ResponseEntity<Product> responseEntity = new ResponseEntity<>(product, HttpStatus.OK);
 
@@ -92,13 +95,30 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
-    public String patchProduct(@PathVariable("productId") Long productId){
-        return "Patching Product with id: " + productId;
+    public Product patchProduct(@PathVariable("productId") Long productId, @RequestBody ProductDto productDto){
+        Product product = new Product();
+        product.setId(productDto.getId());
+        product.setCategory(new Categories());
+        product.getCategory().setName(productDto.getCategory());
+        product.setTitle(productDto.getTitle());
+        product.setPrice(productDto.getPrice());
+        product.setDescription(productDto.getDescription());
+        return this.productService.updateProduct(productId, product);
+
+
+        //return "Patching Product with id: " + productId;
     }
 
     @DeleteMapping("/{productId}")
     public String deleteProduct(@PathVariable("productId") Long productId){
         return "Deleting Product with id: " + productId;
     }
+
+    @ExceptionHandler({NullPointerException.class, IllegalArgumentException.class})
+    public ResponseEntity<String> handleException(Exception e) {
+        return new ResponseEntity<>("Kuch toh phat hai", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }
 
