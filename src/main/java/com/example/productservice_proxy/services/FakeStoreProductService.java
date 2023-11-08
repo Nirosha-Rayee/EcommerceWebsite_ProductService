@@ -7,6 +7,7 @@ import com.example.productservice_proxy.dtos.ProductDto;
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
 import jakarta.annotation.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+//@Service
 
 
 public class FakeStoreProductService implements ProductServiceInterface {
@@ -29,6 +30,9 @@ public class FakeStoreProductService implements ProductServiceInterface {
     private RestTemplateBuilder restTemplateBuilder;
 
     private FakeStoreClient fakeStoreClient;
+
+    //@Autowired
+
     public FakeStoreProductService(RestTemplateBuilder restTemplateBuilder, FakeStoreClient fakeStoreClient){
         this.restTemplateBuilder=restTemplateBuilder;
         this.fakeStoreClient = fakeStoreClient;
@@ -169,14 +173,19 @@ public class FakeStoreProductService implements ProductServiceInterface {
 
     }
 
+//    @Override
+//    public Product addNewProduct(IClientProductDto productDto) {
+//        RestTemplate restTemplate = restTemplateBuilder.build();
+//        //restTemplate.postForEntity("https://fakestoreapi.com/products",productDto,ProductDto.class);
+//        Product product = getProduct((FakeStoreProductDto) productDto);
+//        return product;
+//
+//
+//    }
+
     @Override
-    public Product addNewProduct(IClientProductDto productDto) {
-        RestTemplate restTemplate = restTemplateBuilder.build();
-        restTemplate.postForEntity("https://fakestoreapi.com/products",productDto,ProductDto.class);
-        Product product = getProduct((FakeStoreProductDto) productDto);
-        return product;
-
-
+    public Product addNewProduct(Product product) {
+        return null;
     }
 
     private Product getProduct(FakeStoreProductDto productDto) {

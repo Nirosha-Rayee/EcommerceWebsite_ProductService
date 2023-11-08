@@ -17,5 +17,7 @@ public interface ProductServiceInterface {
     Product updateProduct(Long productId, Product product);
 
 
-    Product addNewProduct(IClientProductDto productDto);
+//    Product addNewProduct(IClientProductDto productDto);
+
+ Product addNewProduct(Product product);
 }
